@@ -22,7 +22,8 @@ static Visual               *VISUAL;
 
 int                   MILLISECONDS_PER_FRAME = 50;
 char                  ROOT_DIR[256];
-char                 *FRAME_FILE_NAME_FORMAT = "%05d.gif";
+char                 *ANIM_FRAME_FILE_NAME_FORMAT = "%05d.gif";
+char                 *STATIC_FRAME_FILE_NAME_FORMAT = "%05d.png";
 
 struct scene scene_array[NUM_OF_SCENES];
 
@@ -45,7 +46,7 @@ struct timespec timespec_get_difference(struct timespec start, struct timespec e
     return temp;
 };
 
-int load_scene_from_file(char *folder_path, char *format, int scene_index)
+void load_scene_from_file(char *folder_path, char *format, int scene_index)
 {
   // load images from disk
   int frame_number = 0;
@@ -55,7 +56,8 @@ int load_scene_from_file(char *folder_path, char *format, int scene_index)
 	snprintf(file_name, 128, format, frame_number);
 	if (file_name[0] == '\0')
   {
-		return 1;
+    printf("ERROR: unable to load frames from file\n");
+		exit(1);
 	}
 
 	memset(current_file, 0, sizeof(current_file));
@@ -100,7 +102,7 @@ int load_scene_from_file(char *folder_path, char *format, int scene_index)
 		imlib_free_image();
 	}
 
-  return 0;
+  return;
 }
 
 void set_pixmap_property(Pixmap p)
@@ -134,7 +136,23 @@ void set_pixmap_property(Pixmap p)
   XFlush(XDPY);
 }
 
-void animate_root_background(int scene_index)
+void set_root_background_static(int scene_index)
+{
+  Pixmap current_pixmap = *(scene_array[scene_index].pmap);
+  set_pixmap_property(current_pixmap);
+  XSetWindowBackgroundPixmap(XDPY, ROOT_WIN, current_pixmap);
+  XClearWindow(XDPY, ROOT_WIN);
+
+  // check periodically whether it needs to stop so the root background can be changed
+  while (*keep_looping)
+  {
+    usleep(MILLISECONDS_PER_FRAME*1000);
+  }
+
+  return;
+}
+
+void set_root_background_anim(int scene_index)
 {
   struct scene s = scene_array[scene_index];
 
@@ -215,14 +233,34 @@ void setroot_main()
   prog_log("-> generating pixmaps from files\n");
   char *home = getenv("HOME");
   strcpy(ROOT_DIR, home);
-  strcat(ROOT_DIR, "/.dontblink/anim/");
+  strcat(ROOT_DIR, "/.dontblink");
   char frames_dir[256];
+  char *path_end;
+  char *format;
+  if (use_static_images)
+  {
+    path_end = "%s/%d/";
+    format = STATIC_FRAME_FILE_NAME_FORMAT;
+  }
+  else
+  {
+    path_end = "%s/%d/anim/";
+    format = ANIM_FRAME_FILE_NAME_FORMAT;
+  }
   for (int i = 0; i < NUM_OF_SCENES; i++ )
   {
-    snprintf(frames_dir, 256, "%s%d/", ROOT_DIR, i);
-    snprintf(log_str_buf, 256, "   -> %s loaded\n", frames_dir);
+    snprintf(frames_dir, 256, path_end, ROOT_DIR, i);
+    load_scene_from_file(frames_dir, format, i);
+
+    if (use_static_images)
+    {
+      snprintf(log_str_buf, 256, "   -> %s00000.png loaded\n", frames_dir);
+    }
+    else
+    {
+      snprintf(log_str_buf, 256, "   -> %s loaded\n", frames_dir);
+    }
     prog_log(log_str_buf);
-    load_scene_from_file(frames_dir, FRAME_FILE_NAME_FORMAT, i);
   }
 
   // set atoms
@@ -245,7 +283,14 @@ void setroot_main()
       current_scene = 0;
     }
     *keep_looping = 1;
-    animate_root_background(current_scene);
+    if (use_static_images)
+    {
+      set_root_background_static(current_scene);
+    }
+    else
+    {
+      set_root_background_anim(current_scene);
+    }
   }
 
   prog_log("-> terminating...\n");

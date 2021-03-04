@@ -62,5 +62,5 @@ void start_xlistener()
 
   XCloseDisplay(XDPY);
   prog_log("-> terminated xevent listener\n");
-  exit(0);
+  return;
 }

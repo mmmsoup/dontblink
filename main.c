@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <wait.h>
 
 #include "args.h"        // parse command-line arguments
 #include "global.h"      // variables that need to be accessed from multiple files
@@ -46,7 +47,8 @@ int main(int argc, char *argv[])
   cont_execution = mmap(NULL, sizeof *cont_execution, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
   *cont_execution = 1;
 
-  pid_t cpid;
+  pid_t cpid, wpid;
+  int status;
   cpid = fork();
   if (cpid < 0)
   {
@@ -62,6 +64,13 @@ int main(int argc, char *argv[])
   {
     // parent process to manage setting the wallpaper
     setroot_main();
+
+    while ((wpid = wait(&status)) > 0);
+
+    if (quiet_on == 1)
+    {
+      printf("stopped\n");
+    }
   }
 
   return 0;

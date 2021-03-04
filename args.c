@@ -9,11 +9,11 @@
 
 void show_help()
 {
-  printf("usage: '$ dontblink [option]'\n");
+  printf("usage: 'dontblink [option]'\n");
   printf("options:\n");
   printf("   -a - force use of animated wallpaper (heavier on resources but looks cooler)\n");
   printf("   -s - force use of static images (easier on resources and loads quicker)\n");
-  printf("   -q - set quiet mode (silences most output)\n");
+  printf("   -q - run in quiet mode (silences most output)\n");
   printf("   -h - display this help dialogue\n");
   return;
 }
@@ -63,16 +63,16 @@ void parse_args(int argc, char *argv[])
         if (strcmp(argv[1], "-h") == 0)
         {
           show_help();
+          exit(0);
         }
         else
         {
-          printf("'-h': flag invalid in this context - run `dontblink -h` for help\n");
+          printf("'-h': flag invalid in this context - run 'dontblink -h' for help\n");
           exit(1);
         }
-        break;
       case '?':
         show_help();
-        break;
+        exit(0);
     }
   }
 

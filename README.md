@@ -16,9 +16,10 @@ cd dontblink
 ./install.sh
 ```
 
+Run `dontblink -h` for usage info
+
 ## To-Do
 - make checking whether desktop is obscured better and more comprehensive
-- add option to use stills instead of animations
 - restore previous wallpaper after program is terminated
 - resize static images based on target resolution during install process
 - optimise loading of images so wait at beginning is not so long
