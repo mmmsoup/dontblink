@@ -254,11 +254,11 @@ void setroot_main()
 
     if (use_static_images)
     {
-      snprintf(log_str_buf, 256, "   -> %s00000.png loaded\n", frames_dir);
+      snprintf(log_str_buf, 256, "   -> loaded %s00000.png\n", frames_dir);
     }
     else
     {
-      snprintf(log_str_buf, 256, "   -> %s loaded\n", frames_dir);
+      snprintf(log_str_buf, 256, "   -> loaded %s\n", frames_dir);
     }
     prog_log(log_str_buf);
   }
