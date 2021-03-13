@@ -7,8 +7,6 @@
 
 #include "xlistener.h"
 
-#include <stdio.h>
-
 static Display              *XDPY;
 static unsigned int          XSCRN_NUM;
 static Screen               *XSCRN;
@@ -77,7 +75,8 @@ void start_xlistener()
   Atom type;
   Window win_actual, win_identifier;
   XEvent event;
-  int format, status, revert_to, win_arr_index, currently_obscured;
+  int format, status, revert_to, win_arr_index;
+  int currently_obscured = 0;
   unsigned long length, after;
   unsigned char *val;
 

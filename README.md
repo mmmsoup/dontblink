@@ -9,6 +9,8 @@ A program for X11 to set the desktop wallpaper to a series of stills (or gifs) o
 
 The code to set the wallpaper is taken from the awesome [asetroot](https://github.com/Wilnath/asetroot) by [@Wilnath](https://github.com/Wilnath)
 
+Developed and works on awesomewm, currently doesn't work on i3 or plasma, others untested.
+
 ## Installation
 Install dependencies:
 ```
@@ -26,11 +28,12 @@ cd dontblink
 Run `dontblink -h` for usage info
 
 ## To-Do
+- make it work on plasma and i3 (hopefully others too)
 - improve how checking whether desktop can be seen is done
 - restore previous wallpaper after program is terminated
-- resize static images based on target resolution during install process
 
 ---
 
 ![david](david.jpeg)
+
 _Don't blink. Blink and you're dead. They are fast, faster than you could believe. Don't turn your back, don't look away, and don't blink._
